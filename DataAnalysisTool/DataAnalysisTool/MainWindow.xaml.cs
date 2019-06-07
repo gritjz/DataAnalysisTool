@@ -212,8 +212,10 @@ namespace DataAnalysisTool
                 {
                     var line = reader.ReadLine();
                     var values = line.Split(',');
-                    p.X = Convert.ToDouble(values[0].Remove(0, 2));
-                    p.Y = Convert.ToDouble(values[1].Remove(values[1].Length - 2, 2));
+                    //Point in csv will be saved as "0,0"
+                    p.X = Convert.ToDouble(values[0].Remove(0, 1));
+                    p.Y = Convert.ToDouble(values[1].Remove(values[1].Length - 1, 1));
+                    
                     listA.Add(new DataPoint(p.X, p.Y));
                 }
             }
@@ -231,7 +233,8 @@ namespace DataAnalysisTool
         #region CheckBoxEvent
         private void OnCircleCursorEnableChecked(object sender, RoutedEventArgs e)
         {
-            this.mainView.IsCircleCursorEnable = this.chkCircleCursorEnable.IsChecked == true ? true : false;
+            this.mainView.IsDCursorEnable = this.chkDCursorEnable.IsChecked == true ? true : false;
+            this.mainView.IsGeoCursorEnable = this.chkGCursorEnable.IsChecked == true ? true : false;
         }
 
 
@@ -245,27 +248,29 @@ namespace DataAnalysisTool
                 (sender as System.Windows.Forms.Control).Text = (sender as System.Windows.Forms.NumericUpDown).Value.ToString();
         }
 
-        private void OnCircleCursorCenterXChanged(object sender, EventArgs e)
+        private void OnDCursorCenterXChanged(object sender, EventArgs e)
         {
-            this.mainView.CircleCursorCenterX = Convert.ToDouble(this.nudCircleCursorCenterX.Value);
+            this.mainView.DCursorCenterX = Convert.ToDouble(this.nudDCursorCenterX.Value);
+           
             this.oxyPlot.UpdateCursors();
             this.oxyPlot.UpdateData();
             this.oxyPlot.UpdatePlot();
         }
 
-        private void OnCircleCursorCenterYChanged(object sender, EventArgs e)
+        private void OnDCursorCenterYChanged(object sender, EventArgs e)
         {
-            this.mainView.CircleCursorCenterY = Convert.ToDouble(this.nudCircleCursorCenterY.Value);
+            this.mainView.DCursorCenterY = Convert.ToDouble(this.nudDCursorCenterY.Value);
+         
             this.oxyPlot.UpdateCursors();
             this.oxyPlot.UpdateData();
             this.oxyPlot.UpdatePlot();
         }
 
-        private void OnCircleCursorRadiusChanged(object sender, EventArgs e)
+        private void OnDCursorRadiusChanged(object sender, EventArgs e)
         {
             if (!this.oxyPlot.isMouseAction)
             {
-                this.mainView.CircleCursorRadius = Math.Max(Convert.ToDouble(nudCircleCursorRadius.Value * 2), 0.00);
+                this.mainView.DCursorRadius = Math.Max(Convert.ToDouble(nudDCursorRadius.Value * 2), 0.00);
                 this.oxyPlot.UpdateCursors();
                 this.oxyPlot.UpdateAxis();
                 this.oxyPlot.UpdateData();
@@ -273,21 +278,72 @@ namespace DataAnalysisTool
             }
         }
 
-        private void OnCircleCursorAngleChanged(object sender, EventArgs e)
+        private void ODCursorAngleChanged(object sender, EventArgs e)
         {
-            if (Convert.ToDouble(nudCircleCursorAngle.Value) >= 360)
+            
+            if (Convert.ToDouble(nudDCursorAngle.Value) >= 360)
             {
-                nudCircleCursorAngle.Value = 0;
+                nudDCursorAngle.Value = 0;
             }
-            if (Convert.ToDouble(nudCircleCursorAngle.Value) < 0)
+            if (Convert.ToDouble(nudDCursorAngle.Value) < 0)
             {
-                nudCircleCursorAngle.Value = 360 + nudCircleCursorAngle.Value;
+                nudDCursorAngle.Value = 360 + nudDCursorAngle.Value;
+            }
+            
+            if (!this.oxyPlot.isMouseAction)
+            {
+                this.mainView.DCursorAngle = Convert.ToDouble(nudDCursorAngle.Value);
+                this.oxyPlot.UpdateCursors();
+                this.oxyPlot.UpdateData();
+                this.oxyPlot.UpdatePlot();
+            }
+        }
+
+        private void OnGCursorCenterXChanged(object sender, EventArgs e)
+        {
+            this.mainView.GeoCursorCenterX = Convert.ToDouble(this.nudGeoCursorCenterX.Value);
+
+            this.oxyPlot.UpdateCursors();
+        //    this.oxyPlot.UpdateData();
+            this.oxyPlot.UpdatePlot();
+        }
+
+        private void OnGCursorCenterYChanged(object sender, EventArgs e)
+        {
+            this.mainView.GeoCursorCenterY = Convert.ToDouble(this.nudGeoCursorCenterY.Value);
+
+            this.oxyPlot.UpdateCursors();
+        //    this.oxyPlot.UpdateData();
+            this.oxyPlot.UpdatePlot();
+        }
+
+        private void OnGCursorRadiusChanged(object sender, EventArgs e)
+        {
+            if (!this.oxyPlot.isMouseAction)
+            {
+                this.mainView.GeoCursorRadius = Math.Max(Convert.ToDouble(nudGeoCursorRadius.Value * 2), 0.00);
+                this.oxyPlot.UpdateCursors();
+                this.oxyPlot.UpdateAxis();
+             //   this.oxyPlot.UpdateData();
+                this.oxyPlot.UpdatePlot();
+            }
+        }
+
+        private void OnGCursorAngleChanged(object sender, EventArgs e)
+        {
+            if (Convert.ToDouble(nudGeoCursorAngle.Value) >= 360)
+            {
+                nudGeoCursorAngle.Value = 0;
+            }
+            if (Convert.ToDouble(nudGeoCursorAngle.Value) < 0)
+            {
+                nudGeoCursorAngle.Value = 360 + nudGeoCursorAngle.Value;
             }
             if (!this.oxyPlot.isMouseAction)
             {
-                this.mainView.CircleCursorAngle = Convert.ToDouble(nudCircleCursorAngle.Value);
+                this.mainView.GeoCursorAngle = Convert.ToDouble(nudGeoCursorAngle.Value);
                 this.oxyPlot.UpdateCursors();
-                this.oxyPlot.UpdateData();
+              //  this.oxyPlot.UpdateData();
                 this.oxyPlot.UpdatePlot();
             }
         }
@@ -342,12 +398,16 @@ namespace DataAnalysisTool
         #region Other Events
         public void UpdateNudParameters(object sender, EventArgs e)
         {
-            this.nudCircleCursorCenterX.Value = Math.Max(this.nudCircleCursorCenterX.Minimum,
-                        Math.Min((decimal)this.mainView.CircleCursorCenterX, this.nudCircleCursorCenterX.Maximum));
-            this.nudCircleCursorCenterY.Value = Math.Max(this.nudCircleCursorCenterY.Minimum,
-                        Math.Min((decimal)this.mainView.CircleCursorCenterY, this.nudCircleCursorCenterY.Maximum));
-            //this.nudCircleCursorRadius.Value = Math.Max(this.nudCircleCursorRadius.Minimum,
-            //           Math.Min((decimal)this.mainView.CircleCursorRadius, this.nudCircleCursorRadius.Maximum));
+            this.nudGeoCursorCenterX.Value = Math.Max(this.nudGeoCursorCenterX.Minimum,
+                        Math.Min((decimal)this.mainView.GeoCursorCenterX, this.nudGeoCursorCenterX.Maximum));
+            this.nudGeoCursorCenterY.Value = Math.Max(this.nudGeoCursorCenterY.Minimum,
+                        Math.Min((decimal)this.mainView.GeoCursorCenterY, this.nudGeoCursorCenterY.Maximum));
+
+            this.nudDCursorCenterX.Value = Math.Max(this.nudDCursorCenterX.Minimum,
+                      Math.Min((decimal)this.mainView.DCursorCenterX, this.nudDCursorCenterX.Maximum));
+            this.nudDCursorCenterY.Value = Math.Max(this.nudDCursorCenterY.Minimum,
+                        Math.Min((decimal)this.mainView.DCursorCenterY, this.nudDCursorCenterY.Maximum));
+
             this.nudGate1Value.Value = Math.Max(this.nudGate1Value.Minimum,
                         Math.Min((decimal)this.mainView.Gate1Position, this.nudGate1Value.Maximum));
             this.nudGate2Value.Value = Math.Max(this.nudGate2Value.Minimum,

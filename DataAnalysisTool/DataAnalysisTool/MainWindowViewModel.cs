@@ -12,81 +12,163 @@ namespace DataAnalysisTool
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        //update nud
         public event EventHandler ParameterChanged;
 
         #region Properties
-        private bool isCircleCursorEnable;
-        private double circleCursorCenterX;
-        private double circleCursorCenterY;
-        private double circleCursorRadius;
-        private double circleCursorAngle;
+
+       
+
+
+        #region G-Cursor
+        private bool isGeoCursorEnable;
+        private double geoCursorCenterX;
+        private double geoCursorCenterY;
+        private double geoCursorRadius;
+        private double geoCursorAngle;
+        public bool IsGeoCursorEnable
+        {
+            set
+            {
+                this.isGeoCursorEnable = value;
+
+            }
+            get
+            {
+                return this.isGeoCursorEnable;
+            }
+        }
+        public double GeoCursorCenterX
+        {
+            set
+            {
+                this.geoCursorCenterX = value;
+                if (this.ParameterChanged != null)
+                    this.ParameterChanged(this, null);
+            }
+            get
+            {
+                return this.geoCursorCenterX;
+            }
+        }
+
+        public double GeoCursorCenterY
+        {
+            set
+            {
+                this.geoCursorCenterY = value;
+                if (this.ParameterChanged != null)
+                    this.ParameterChanged(this, null);
+            }
+            get
+            {
+                return this.geoCursorCenterY;
+            }
+        }
+
+        public double GeoCursorRadius
+        {
+            set
+            {
+                this.geoCursorRadius = value;
+            }
+            get
+            {
+                return this.geoCursorRadius;
+            }
+        }
+
+        public double GeoCursorAngle
+        {
+            set
+            {
+                this.geoCursorAngle = value;
+            }
+            get
+            {
+                return this.geoCursorAngle;
+            }
+        }
+        #endregion D-Cursor
+
+        #region D-Cursor
+        private bool isDCursorEnable;
+        private double dCursorCenterX;
+        private double dCursorCenterY;
+        private double dCursorRadius;
+        private double dCursorAngle;
+        public bool IsDCursorEnable
+        {
+            set
+            {
+                this.isDCursorEnable = value;
+
+            }
+            get
+            {
+                return this.isDCursorEnable;
+            }
+        }
+        public double DCursorCenterX
+        {
+            set
+            {
+                this.dCursorCenterX = value;
+                if (this.ParameterChanged != null)
+                    this.ParameterChanged(this, null);
+            }
+            get
+            {
+                return this.dCursorCenterX;
+            }
+        }
+
+        public double DCursorCenterY
+        {
+            set
+            {
+                this.dCursorCenterY = value;
+                if (this.ParameterChanged != null)
+                    this.ParameterChanged(this, null);
+            }
+            get
+            {
+                return this.dCursorCenterY;
+            }
+        }
+
+        public double DCursorRadius
+        {
+            set
+            {
+                this.dCursorRadius = value;
+            }
+            get
+            {
+                return this.dCursorRadius;
+            }
+        }
+
+        public double DCursorAngle
+        {
+            set
+            {
+                this.dCursorAngle = value;
+            }
+            get
+            {
+                return this.dCursorAngle;
+            }
+        }
+        #endregion D-Cursor
+
+
+
+        #region Gate
+
         private double gate1Position;
         private double gate2Position;
         private string gateDataRange;
-        private List<List<Point>> wearSurfaceLists;
-        public bool IsCircleCursorEnable
-        {
-            set
-            {
-                this.isCircleCursorEnable = value;
-
-            }
-            get
-            {
-                return this.isCircleCursorEnable;
-            }
-        }
-        public double CircleCursorCenterX
-        {
-            set
-            {
-                this.circleCursorCenterX = value;
-                if (this.ParameterChanged != null)
-                    this.ParameterChanged(this, null);
-            }
-            get
-            {
-                return this.circleCursorCenterX;
-            }
-        }
-
-        public double CircleCursorCenterY
-        {
-            set
-            {
-                this.circleCursorCenterY = value;
-                if (this.ParameterChanged != null)
-                    this.ParameterChanged(this, null);
-            }
-            get
-            {
-                return this.circleCursorCenterY;
-            }
-        }
-
-        public double CircleCursorRadius
-        {
-            set
-            {
-                this.circleCursorRadius = value;
-            }
-            get
-            {
-                return this.circleCursorRadius;
-            }
-        }
-
-        public double CircleCursorAngle
-        {
-            set
-            {
-                this.circleCursorAngle = value;
-            }
-            get
-            {
-                return this.circleCursorAngle;
-            }
-        }
 
         public double Gate1Position
         {
@@ -101,6 +183,8 @@ namespace DataAnalysisTool
                 return this.gate1Position;
             }
         }
+
+
         public double Gate2Position
         {
             set
@@ -126,9 +210,10 @@ namespace DataAnalysisTool
                 return this.gateDataRange;
             }
         }
-        #region Wear Surfaces
-        public WearSurfaceLine l { get; set; }
+        #endregion Gate
 
+        #region Wear Surfaces
+        
         public List<List<DataPoint>> WearSurfacePointLists
         {
             set;
@@ -146,7 +231,10 @@ namespace DataAnalysisTool
             }
         }
         #endregion
+
+
         #endregion
+
         /// <summary>
         /// 
         /// </summary>

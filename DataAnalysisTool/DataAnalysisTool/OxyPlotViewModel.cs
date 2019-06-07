@@ -46,6 +46,7 @@ namespace DataAnalysisTool
         private LinearColorAxis CScanPalette;
         private LinearColorAxis DScanPalette;
 
+        private CircleCursor GeometryCursor;
         private CircleCursor DataCursor;
         private GateCursor GateCursor1;
         private GateCursor GateCursor2;
@@ -98,8 +99,7 @@ namespace DataAnalysisTool
 
         private void UpdateDscanData()
         {
-
-            DataPoint[] Points = this.DataCursor.RadiusPoints;
+            //DataPoint[] Points = this.DataCursor.RadiusPoints;
             this.DScanRawData = new double[(int)Math.Round(this.DataCursor.Radius), 100];
 
             double max = Double.MinValue;
@@ -109,9 +109,8 @@ namespace DataAnalysisTool
                 {
                     for (int angle = 0; angle < 360; angle++)
                     {
-                        // // double b = D_data[(int)Points[r].X, (int)Points[r].Y, z];
                         Point p = GetPositionOnCircle(this.DataCursor.CenterPoint, angle, r);
-                        max = Math.Max(Original_data[(int)p.X, (int)p.Y, z], max);
+                        max = Math.Max(Original_data[(int)Math.Round(p.X), (int)Math.Round(p.Y), z], max);
                     }
                     DScanRawData[r, z] = max;
                 }
@@ -126,7 +125,7 @@ namespace DataAnalysisTool
             return new Point(x, y);
         }
 
-        private double GetMinimumvalueInCircle()
+        private double GetMaxValueOnRing()
         {
             double res = 0;
 
@@ -201,7 +200,7 @@ namespace DataAnalysisTool
                         // data[x, y] = singleData[x] * singleData[(y) % 100] * 100;
                         for (int z = 0; z < 100; ++z)
                         {
-                            Original_data[x, y, z] = random.Next(0, 100); //singleData[x] * singleData[(y) % 100] * 100;
+                            Original_data[x, y, z] = singleData[x] * singleData[(y) % 100] * 100;//random.Next(0, 100); 
                         }
                     }
                 }
@@ -246,12 +245,13 @@ namespace DataAnalysisTool
                 TitleFontSize = 30
             };
             this.DataCursor = new CircleCursor(this.CScanModel);
+            this.GeometryCursor = new CircleCursor(this.CScanModel);
 
             this.GateCursor1 = new GateCursor(this.DScanModel);
             this.GateCursor2 = new GateCursor(this.DScanModel);
 
             this.DataCursor.CircleCursorParameterChanged += new EventHandler(UpdateDataCursorParameters);
-
+            this.GeometryCursor.CircleCursorParameterChanged += new EventHandler(UpdateDataCursorParameters);
             this.GateCursor1.GateCursorParameterChanged += new EventHandler(UpdateGateCursorParameters);
             this.GateCursor2.GateCursorParameterChanged += new EventHandler(UpdateGateCursorParameters);
 
@@ -260,8 +260,10 @@ namespace DataAnalysisTool
 
         private void UpdateDataCursorParameters(object sender, EventArgs e)
         {
-            this.mainView.CircleCursorCenterX = this.DataCursor.GetCircleCursor().X;
-            this.mainView.CircleCursorCenterY = this.DataCursor.GetCircleCursor().Y;
+            this.mainView.DCursorCenterX = this.DataCursor.GetCircleCursor().X;
+            this.mainView.DCursorCenterY = this.DataCursor.GetCircleCursor().Y;
+            this.mainView.GeoCursorCenterX = this.GeometryCursor.GetCircleCursor().X;
+            this.mainView.GeoCursorCenterY = this.GeometryCursor.GetCircleCursor().Y;
         }
 
         private void UpdateGateCursorParameters(object sender, EventArgs e)
@@ -281,13 +283,27 @@ namespace DataAnalysisTool
                 this.GateCursor2.UpdateGateCursor();
             }
             //Update CircleCursor
+        
+                this.DataCursor.SetParameters(
+                    new Point(Convert.ToDouble(this.mainView.DCursorCenterX), this.mainView.DCursorCenterY),
+                    this.mainView.DCursorRadius,
+                    this.mainView.DCursorAngle);
+                this.DataCursor.IsRadiusEnable = true;
+                this.DataCursor.IsRadiusVisible = false;
             if (!this.DataCursor.MousePressed && !this.isMouseAction)
             {
-                this.DataCursor.SetParameters(
-                    new Point(Convert.ToDouble(this.mainView.CircleCursorCenterX), this.mainView.CircleCursorCenterY),
-                    this.mainView.CircleCursorRadius,
-                    this.mainView.CircleCursorAngle);
                 this.DataCursor.UpdateCursor();
+            }
+            if (!this.GeometryCursor.MousePressed && !this.isMouseAction)
+            {
+                this.GeometryCursor.SetParameters(
+                     new Point(Convert.ToDouble(this.mainView.GeoCursorCenterX), this.mainView.GeoCursorCenterY),
+                    this.mainView.GeoCursorRadius,
+                    this.mainView.GeoCursorAngle
+                    );
+                this.GeometryCursor.IsRadiusEnable = false;
+                this.DataCursor.IsRadiusVisible = false;
+                this.GeometryCursor.UpdateCursor();
             }
         }
 
@@ -313,7 +329,7 @@ namespace DataAnalysisTool
                 X1 = 100,
                 Y0 = 0,
                 Y1 = 100,
-                Interpolate = true,
+                Interpolate = false,
                 RenderMethod = HeatMapRenderMethod.Bitmap,
                 //  Data = CScanRawData
             };
@@ -324,7 +340,7 @@ namespace DataAnalysisTool
                 X1 = 100,
                 Y0 = 0,
                 Y1 = 100,
-                Interpolate = true,
+                Interpolate = false,
                 RenderMethod = HeatMapRenderMethod.Bitmap,
                 // Data = DScanRawData
             };
@@ -446,14 +462,46 @@ namespace DataAnalysisTool
             
             CScanModel.Series.Add(this.DataCursor.GetRadius());
 
-            if (CScanModel.Annotations.Count == 0)
+            if (!CScanModel.Annotations.Contains(this.GeometryCursor.GetCircleCursor()))
+            {
+                CScanModel.Annotations.Add(this.GeometryCursor.GetCircleCursor());
+            }
+            else
+            {
+                int index = CScanModel.Annotations.IndexOf(this.GeometryCursor.GetCircleCursor());
+                CScanModel.Annotations[index] = this.GeometryCursor.GetCircleCursor();
+            }
+
+            if (!CScanModel.Annotations.Contains(this.DataCursor.GetCircleCursor()))
             {
                 CScanModel.Annotations.Add(this.DataCursor.GetCircleCursor());
             }
             else
             {
-                CScanModel.Annotations[0] = this.DataCursor.GetCircleCursor();
+                int index = CScanModel.Annotations.IndexOf(this.DataCursor.GetCircleCursor());
+                CScanModel.Annotations[index] = this.DataCursor.GetCircleCursor();
+
             }
+            //if (CScanModel.Annotations.Count == 0)
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
+
+            //if (CScanModel.Annotations.Count == 0)
+            //{
+            //    CScanModel.Annotations.Add(this.DataCursor.GetCircleCursor());
+            //}
+            //else
+            //{
+            //    CScanModel.Annotations[1] = this.DataCursor.GetCircleCursor();
+            //}
+
+
+
             if (DScanModel.Annotations.Count == 0)
             {
                 DScanModel.Annotations.Add(this.GateCursor1.GetGateCursor());
@@ -676,6 +724,10 @@ namespace DataAnalysisTool
         {
             set; get;
         }
+
+        /// <summary>
+        ///  Get Radius Length
+        /// </summary>
         public double Radius
         {
             get
@@ -688,6 +740,10 @@ namespace DataAnalysisTool
                 return radius;
             }
         }
+
+        /// <summary>
+        /// Get point on radius
+        /// </summary>
         public DataPoint[] RadiusPoints
         {
             get
@@ -700,6 +756,37 @@ namespace DataAnalysisTool
                 return points;
             }
         }
+        private bool isRadiusEnable = true;
+        public bool IsRadiusEnable
+        {
+            set
+            {
+                this.isRadiusEnable = value;
+                if (value == true)
+                {
+                    this.UpdateRadiusLine();
+                }
+            }
+            get {
+                return this.isRadiusEnable;
+            }
+        }
+
+        private bool isRadiusVisible = false;
+        public bool IsRadiusVisible
+        {
+            set
+            {
+                this.isRadiusVisible = value;
+                this.radiusLine.IsVisible = value;
+            }
+            get
+            {
+                return this.isRadiusVisible;
+            }
+        }
+
+
         #endregion
 
         #region Public Functions
@@ -722,7 +809,6 @@ namespace DataAnalysisTool
             this.ellipse.Height = radius;
             this.CenterPoint = center;
             this.RadiusAngle = radiusAngle;
-            this.UpdateRadiusLine();
         }
 
         /// <summary>
@@ -758,8 +844,8 @@ namespace DataAnalysisTool
             {
                 ellipse.X = ellipse.InverseTransform(e.Position).X;
                 ellipse.Y = ellipse.InverseTransform(e.Position).Y;
-
-                this.UpdateRadiusLine();
+                if(this.isRadiusEnable)
+                    this.UpdateRadiusLine();
                 if (this.CircleCursorParameterChanged != null)
                     this.CircleCursorParameterChanged(this, null);
                 model.InvalidatePlot(false);
@@ -772,6 +858,7 @@ namespace DataAnalysisTool
                 e.Handled = false;
             };
         }
+        
 
         private void UpdateRadiusLine()
         {

@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataAnalysisTool"
         mc:Ignorable="d" WindowState="Maximized"
-        Title="DataAnalysisTool" Height="500" Width="800" Background="LightBlue"  SizeChanged="Window_SizeChanged"
+        Title="Data Analysis Tool" Height="500" Width="800" Background="LightBlue"  SizeChanged="Window_SizeChanged"
         PreviewKeyDown="OnPreviewKeyDown" PreviewKeyUp="OnPreviewKeyUp" Icon="Image/TPAC.png">
 
     <Grid x:Name="GRIDWINDOW">
@@ -25,7 +25,10 @@
         <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" >
             <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
 
-                <GroupBox Header="File" Margin="5" BorderThickness="1"  MaxWidth="200" >
+                <GroupBox Margin="5" BorderThickness="1"  MaxWidth="200" >
+                    <GroupBox.Header>
+                        <TextBlock Text="File" FontWeight="Heavy"/>
+                    </GroupBox.Header>
                     <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0" >
                         <Button Name="btnLoadData" Width="50" Height="50" Margin="5" Content="Load" VerticalContentAlignment="Center" Click="btnLoadData_Click" />
                         <Button Name="btnSaveData" Width="50" Height="50" Margin="5" Content="Save" VerticalContentAlignment="Center" Click="btnSaveData_Click"/>
@@ -33,15 +36,23 @@
 
                 </GroupBox>
 
-                <GroupBox Header="C-Scan" Margin="5" BorderThickness="1"  MaxWidth="200" >
+                <GroupBox Margin="5" BorderThickness="1"  MaxWidth="200" >
+                    <GroupBox.Header>
+                        <TextBlock Text="C-Scan" FontWeight="Heavy"/>
+                    </GroupBox.Header>
                     <Grid>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <GroupBox Header="Cursor"   MaxWidth="200" >
+                        <!--G-Cursor-->
+                        <GroupBox Background="Beige"  MaxWidth="200" Grid.Row="0">
+                            <GroupBox.Header>
+                                <TextBlock Text="G-Cursor" FontWeight="Medium"/>
+                            </GroupBox.Header>
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
@@ -56,8 +67,10 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <CheckBox x:Name="chkCircleCursorEnable" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" IsChecked="false" Checked="OnCircleCursorEnableChecked" Height="16" VerticalAlignment="Top">
-                                    <TextBlock FontWeight="Medium" >
+                                <CheckBox x:Name="chkGCursorEnable" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" IsChecked="false" 
+                                          Checked="OnCircleCursorEnableChecked" Height="16" 
+                                          VerticalAlignment="Center" Margin="2" >
+                                    <TextBlock FontWeight="Medium" VerticalAlignment="Center" Margin="2">
                                         <TextBlock.Resources>
                                             <Style TargetType="{x:Type TextBlock}">
                                                 <Style.Triggers>
@@ -85,33 +98,107 @@
                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Angle" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                                 <WindowsFormsHost Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2" 
-                                      IsEnabled="{Binding ElementName=chkCircleCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
-                                    <winformhost:NumericUpDown x:Name="nudCircleCursorCenterX" Increment="0.5" DecimalPlaces="2" Maximum="10000" 
-                                                ValueChanged="OnCircleCursorCenterXChanged" TextChanged="OnNudTextChanged"/>
+                                      IsEnabled="{Binding ElementName=chkGCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudGeoCursorCenterX" Increment="0.5" DecimalPlaces="2" Maximum="10000" 
+                                                ValueChanged="OnGCursorCenterXChanged" TextChanged="OnNudTextChanged"/>
                                 </WindowsFormsHost>
                                 <WindowsFormsHost Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2"
-                                      IsEnabled="{Binding ElementName=chkCircleCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
-                                    <winformhost:NumericUpDown x:Name="nudCircleCursorCenterY" Increment="0.5" DecimalPlaces="2"  Maximum="10000"
-                                                   ValueChanged="OnCircleCursorCenterYChanged" TextChanged="OnNudTextChanged"/>
+                                      IsEnabled="{Binding ElementName=chkGCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudGeoCursorCenterY" Increment="0.5" DecimalPlaces="2"  Maximum="10000"
+                                                   ValueChanged="OnGCursorCenterYChanged" TextChanged="OnNudTextChanged"/>
                                 </WindowsFormsHost>
                                 <WindowsFormsHost Grid.Column="1" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2"
-                                      IsEnabled="{Binding ElementName=chkCircleCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
-                                    <winformhost:NumericUpDown x:Name="nudCircleCursorRadius" Increment="0.5" DecimalPlaces="2" Minimum="0" Maximum="100" 
-                                                   ValueChanged="OnCircleCursorRadiusChanged" TextChanged="OnNudTextChanged"/>
+                                      IsEnabled="{Binding ElementName=chkGCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudGeoCursorRadius" Increment="0.5" DecimalPlaces="2" Minimum="0" Maximum="100" 
+                                                   ValueChanged="OnGCursorRadiusChanged" TextChanged="OnNudTextChanged"/>
                                 </WindowsFormsHost>
                                 <WindowsFormsHost Grid.Column="1" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2"
-                                      IsEnabled="{Binding ElementName=chkCircleCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
-                                    <winformhost:NumericUpDown x:Name="nudCircleCursorAngle" Increment="0.5" DecimalPlaces="2" Minimum="-360" Maximum="360"
-                                                   ValueChanged="OnCircleCursorAngleChanged" TextChanged="OnNudTextChanged"/>
+                                      IsEnabled="{Binding ElementName=chkGCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudGeoCursorAngle" Increment="0.5" DecimalPlaces="2" Minimum="-360" Maximum="360"
+                                                   ValueChanged="OnGCursorAngleChanged" TextChanged="OnNudTextChanged"/>
                                 </WindowsFormsHost>
                             </Grid>
 
                         </GroupBox>
+                       
+                        <!--D-Cursor-->
+                        <GroupBox  Background="Beige" MaxWidth="200" Grid.Row="1" >
+                            <GroupBox.Header>
+                                <TextBlock Text="D-Cursor" FontWeight="Medium"/>
+                            </GroupBox.Header>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
+                                <CheckBox x:Name="chkDCursorEnable" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" IsChecked="false" Checked="OnCircleCursorEnableChecked"
+                                          Height="16" VerticalAlignment="Center" Margin="2" >
+                                    <TextBlock FontWeight="Medium" VerticalAlignment="Center" Margin="2" >
+                                        <TextBlock.Resources>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type CheckBox}}, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}"
+                                                     Value="false">
+                                                        <Setter Property="Text" Value="OFF"/>
+                                                        <Setter Property="Background" Value="Red"/>
+                                                        <Setter Property="Foreground" Value="Black"/>
+                                                        <Setter Property="FontWeight" Value="Medium"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type CheckBox}}, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}"
+                                                     Value="true">
+                                                        <Setter Property="Text" Value="ON"/>
+                                                        <Setter Property="Background" Value="Green"/>
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                        <Setter Property="FontWeight" Value="Black"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Resources>
+                                    </TextBlock>
+                                </CheckBox>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Center"  VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="0" Grid.Row="2" Text="Radius" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Angle" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+                                <WindowsFormsHost Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2" 
+                                      IsEnabled="{Binding ElementName=chkDCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudDCursorCenterX" Increment="0.5" DecimalPlaces="2" Maximum="10000" 
+                                                ValueChanged="OnDCursorCenterXChanged" TextChanged="OnNudTextChanged"/>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2"
+                                      IsEnabled="{Binding ElementName=chkDCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudDCursorCenterY" Increment="0.5" DecimalPlaces="2"  Maximum="10000"
+                                                   ValueChanged="OnDCursorCenterYChanged" TextChanged="OnNudTextChanged"/>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost Grid.Column="1" Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2"
+                                      IsEnabled="{Binding ElementName=chkDCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudDCursorRadius" Increment="0.5" DecimalPlaces="2" Minimum="0" Maximum="100" 
+                                                   ValueChanged="OnDCursorRadiusChanged" TextChanged="OnNudTextChanged"/>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost Grid.Column="1" Grid.Row="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2"
+                                      IsEnabled="{Binding ElementName=chkDCursorEnable, Path=IsChecked,UpdateSourceTrigger=PropertyChanged}">
+                                    <winformhost:NumericUpDown x:Name="nudDCursorAngle" Increment="0.5" DecimalPlaces="2" Minimum="-360" Maximum="360"
+                                                   ValueChanged="ODCursorAngleChanged" TextChanged="OnNudTextChanged"/>
+                                </WindowsFormsHost>
+                            </Grid>
+
+                        </GroupBox>
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="D-Scan" Margin="5" BorderThickness="1" MaxWidth="200" >
+                <GroupBox  Margin="5" BorderThickness="1" MaxWidth="200" >
+                    <GroupBox.Header>
+                        <TextBlock Text="D-Scan" FontWeight="Heavy"/>
+                    </GroupBox.Header>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
@@ -120,7 +207,10 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <GroupBox Header="Gate" Grid.Column="0" Grid.Row="0">
+                        <GroupBox Grid.Column="0" Grid.Row="0"  Background="Beige" >
+                            <GroupBox.Header>
+                                <TextBlock Text="Gate" FontWeight="Medium"/>
+                            </GroupBox.Header>
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
@@ -132,8 +222,9 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <CheckBox x:Name="chkGateEnable" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" IsChecked="false">
-                                    <TextBlock FontWeight="Medium" >
+                                <CheckBox x:Name="chkGateEnable" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Margin="2" IsChecked="false"
+                                          >
+                                    <TextBlock FontWeight="Medium" VerticalAlignment="Center" Margin="2" >
                                         <TextBlock.Resources>
                                             <Style TargetType="{x:Type TextBlock}">
                                                 <Style.Triggers>
@@ -177,7 +268,10 @@
                             </Grid>
                         </GroupBox>
 
-                        <GroupBox Header="Wear Surface" Grid.Column="0" Grid.Row="1">
+                        <GroupBox Grid.Column="0" Grid.Row="1"  Background="Beige" >
+                            <GroupBox.Header>
+                                <TextBlock Text="Wear Surface" FontWeight="Medium"/>
+                            </GroupBox.Header>
                             <Grid x:Name="grdWearSurfaces">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
@@ -191,8 +285,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <CheckBox x:Name="chkWearSurfaceEnable" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" 
-                                      IsChecked="false" Checked="OnCircleCursorEnableChecked" Height="16" VerticalAlignment="Top">
-                                    <TextBlock FontWeight="Medium" >
+                                      IsChecked="false" Checked="OnCircleCursorEnableChecked" Height="16" VerticalAlignment="Center" Margin="2">
+                                    <TextBlock FontWeight="Medium" VerticalAlignment="Center" >
                                         <TextBlock.Resources>
                                             <Style TargetType="{x:Type TextBlock}">
                                                 <Style.Triggers>
